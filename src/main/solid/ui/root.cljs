@@ -9,6 +9,9 @@
 
 ;; The main UI of your application
 
-(defsc Root [this props]
+(defsc Root [this {:keys [login-button logout-button]}]
+  {:query [{:login-button (prim/get-query components/LoginButton)}
+           {:logout-button (prim/get-query components/LogoutButton)}]}
   (dom/div nil
-    (components/ui-login-button)))
+    (components/ui-login-button login-button)
+    (components/ui-logout-button logout-button)))

@@ -10,6 +10,10 @@
   [state session id]
   (assoc-in state [:session/by-id id] session))
 
+(defn delete-session
+  [state id]
+  (update-in state [:session/by-id] dissoc id))
+
 (defn upsert-solid-session!
   [state session]
   (swap! state
@@ -25,3 +29,16 @@
   [session]
   (action [{:keys [state] :as env}]
     (upsert-solid-session! state session)))
+
+(defn delete-solid-session!
+  [state]
+  (swap! state
+    #(if-let [[_ id] (:authentication/solid-session %)]
+       (-> % (dissoc :authentication/solid-session) (delete-session id))
+       %)))
+
+(defmutation remove-solid-session!
+  "Removes the solid session."
+  [_]
+  (action [{:keys [state] :as env}]
+    (delete-solid-session! state)))
