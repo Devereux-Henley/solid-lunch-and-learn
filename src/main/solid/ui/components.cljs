@@ -17,17 +17,17 @@
 (def ui-placeholder (prim/factory PlaceholderImage))
 
 (defn authenticate [session]
-  (if (not session)
-    (.popupLogin solid-client #js {:popupUri "https://solid.community/common/popup.html"})
-    session))
+  (if session
+    session
+    (.popupLogin solid-client #js {:popupUri "https://solid.community/common/popup.html"})))
 
 (defn login [this]
   (-> (.currentSession solid-client)
     (.then #(authenticate %))
-    (.then #(prim/transact! this `[(api/set-session! ~(js->clj %))]))))
+    (.then #(prim/transact! this `[(api/set-solid-session! ~(js->clj %))]))))
 
 (defsc LoginButton [this props]
-  {:query [:authentication/solid-session]}
+  {:query [[:authentication/solid-session]]}
   (dom/button {:onClick #(login this)} "Login"))
 
 (def ui-login-button (prim/factory LoginButton))
