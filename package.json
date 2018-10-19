@@ -6,6 +6,8 @@
   "dependencies": {},
   "devDependencies": {
     "@trust/webcrypto": "github:anvilresearch/webcrypto#glinklater-browser",
+    "cryptiles": "^4.1.2",
+    "hoek": "^4.2.1",
     "intl-messageformat": "^2.2.0",
     "karma": "^2.0.0",
     "karma-chrome-launcher": "^2.2.0",
