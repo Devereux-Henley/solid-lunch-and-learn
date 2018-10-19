@@ -6,13 +6,17 @@
 
 ;; Place your client mutations here
 
-(defn upsert-session
-  [state session id]
-  (assoc-in state [:session/by-id id] session))
+(defn upsert
+  [table state value id]
+  (assoc-in state [table id] value))
 
-(defn delete-session
-  [state id]
-  (update-in state [:session/by-id] dissoc id))
+(defn delete
+  [table state id]
+  (update-in state [table] dissoc id))
+
+(def session-table :session/by-id)
+(def upsert-session (partial upsert session-table))
+(def delete-session (partial delete session-table))
 
 (defn upsert-solid-session!
   [state session]
@@ -22,7 +26,7 @@
        (let [id (random-uuid)]
          (-> %
            (upsert-session session id)
-           (assoc :authentication/solid-session [:session/by-id id]))))))
+           (assoc :authentication/solid-session [session-table id]))))))
 
 (defmutation set-solid-session!
   "Sets the solid session."

@@ -17,6 +17,7 @@
     "shadow-cljs": "^2.4.22",
     "showdown": "^1.8.6",
     "solid-auth-client": "^2.2.8",
+    "timespan": "github:maxcbc/TimeSpan.js#35b28be7e03a157f753659d87d15c70aeeff1bef",
     "whatwg-url": "^5.0.0"
   },
   "author": "",
