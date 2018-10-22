@@ -25,7 +25,7 @@
     (components/ui-login-button login-button)
     (components/ui-logout-button logout-button)))
 
-(defcard-fulcro AuthenticationButtons
+(defcard-fulcro Authentication
   "Demonstrates the authentication buttons interacting with state."
   AuthenticationRoot
   {}
