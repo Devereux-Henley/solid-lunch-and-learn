@@ -3,9 +3,10 @@
   :license {:name "MIT" :url "https://opensource.org/licenses/MIT"}
   :min-lein-version "2.7.0"
 
-  :dependencies [[org.clojure/clojure "1.9.0"]
-                 [thheller/shadow-cljs "2.4.22"]
-                 [fulcrologic/fulcro "2.6.8"]
+  :dependencies [[org.clojure/clojure     "1.9.0"]
+                 [thheller/shadow-cljs    "2.4.22"]
+                 [fulcrologic/fulcro      "2.6.8"]
+                 [com.wsscode/pathom      "2.2.0-beta14"]
 
                  ; only required if you want to use this for tests
                  [fulcrologic/fulcro-spec "2.1.0-1" :scope "test" :exclusions [fulcrologic/fulcro]]]
