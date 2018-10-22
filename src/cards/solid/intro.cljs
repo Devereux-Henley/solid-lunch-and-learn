@@ -2,6 +2,10 @@
   (:require [devcards.core :as rc :refer-macros [defcard]]
             [solid.ui.components :as comp]))
 
-(defcard SVGPlaceholder
-  "# SVG Placeholder"
-  (comp/ui-placeholder {:w 200 :h 200}))
+(defcard LoginButton
+  "# Login Button"
+  (comp/ui-login-button {}))
+
+(defcard LogoutButton
+  "# Logout Button"
+  (comp/ui-logout-button {:authentication/solid-session {}}))

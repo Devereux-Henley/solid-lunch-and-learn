@@ -28,7 +28,7 @@
            (upsert-session session id)
            (assoc :authentication/solid-session [session-table id]))))))
 
-(defmutation set-solid-session!
+(defmutation set-solid-session
   "Sets the solid session."
   [session]
   (action [{:keys [state] :as env}]
@@ -41,8 +41,8 @@
        (-> % (dissoc :authentication/solid-session) (delete-session id))
        %)))
 
-(defmutation remove-solid-session!
-  "Removes the solid session."
+(defmutation delete-solid-session
+  "Deletes the solid session."
   [_]
   (action [{:keys [state] :as env}]
     (delete-solid-session! state)))
