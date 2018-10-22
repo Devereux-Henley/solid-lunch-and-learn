@@ -1,4 +1,4 @@
-(ns solid.intro
+(ns solid.auth
   (:require
    [devcards.core :as rc :refer-macros [defcard]]
    [solid.ui.components :as components]
@@ -26,7 +26,8 @@
     (components/ui-logout-button logout-button)))
 
 (defcard-fulcro AuthenticationButtons
-  "Demonstrates the authentication buttons interacting with each others state."
+  "Demonstrates the authentication buttons interacting with state."
   AuthenticationRoot
   {}
-  {:inspect-data true})
+  {:inspect-data true
+   :classname "break-all"})
