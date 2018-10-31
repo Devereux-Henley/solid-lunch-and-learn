@@ -4,6 +4,7 @@
   :min-lein-version "2.7.0"
 
   :dependencies [[org.clojure/clojure     "1.9.0"]
+                 [org.clojure/core.async  "0.4.474"]
                  [thheller/shadow-cljs    "2.4.22"]
                  [fulcrologic/fulcro      "2.6.8"]
                  [com.wsscode/pathom      "2.2.0-beta14"]
@@ -22,4 +23,5 @@
                           :dependencies [[binaryage/devtools "0.9.10"]
                                          [org.clojure/core.async "0.4.474"]
                                          [fulcrologic/fulcro-inspect "2.2.4" :exclusions [fulcrologic/fulcro-css]]
-                                         [devcards "0.2.4" :exclusions [cljsjs/react cljsjs/react-dom]]]}})
+                                         [devcards "0.2.4" :exclusions [cljsjs/react cljsjs/react-dom]]]
+                          }})

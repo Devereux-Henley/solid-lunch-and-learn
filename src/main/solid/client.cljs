@@ -1,6 +1,7 @@
 (ns solid.client
   (:require [fulcro.client :as fc]
             [solid.ui.root :as root]
+            [solid.api.rdf :as rdf]
             [fulcro.i18n :as i18n]
             ["intl-messageformat" :as IntlMessageFormat]))
 
