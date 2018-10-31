@@ -13,7 +13,7 @@
 (defn login [this]
   (-> (.currentSession solid-client)
     (.then #(authenticate %))
-    (.then #(prim/transact! this `[(api/set-solid-session! ~(js->clj %))]))))
+    (.then (constantly nil))))
 
 (defsc LoginButton [this {:keys [authentication/solid-session]}]
   {:query [[:authentication/solid-session '_]]}
@@ -23,7 +23,7 @@
 
 (defn logout [this]
   (-> (.logout solid-client)
-    (.then #(prim/transact! this `[(api/delete-solid-session! {})]))))
+    (.then (constantly nil))))
 
 (defsc LogoutButton [this {:keys [authentication/solid-session]}]
   {:query [[:authentication/solid-session '_]]}

@@ -9,12 +9,10 @@
 
 ;; The main UI of your application
 
-(defsc Root [this {:keys [rdf/foo login-button logout-button]}]
-  {:query [:rdf/foo
-           {:login-button (prim/get-query components/LoginButton)}
+(defsc Root [this {:keys [login-button logout-button]}]
+  {:query [{:login-button (prim/get-query components/LoginButton)}
            {:logout-button (prim/get-query components/LogoutButton)}]}
   (do
-    (.log js/console foo)
     (dom/div nil
       (components/ui-login-button login-button)
       (components/ui-logout-button logout-button))))

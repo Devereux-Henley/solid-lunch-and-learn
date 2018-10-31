@@ -15,3 +15,7 @@
 (defn find-any
   [sym relationship]
   (.any store (rdf-symbol sym) relationship))
+
+(defn get-literal
+  [literal]
+  (and literal (.-value literal)))

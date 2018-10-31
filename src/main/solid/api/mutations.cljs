@@ -1,6 +1,6 @@
 (ns solid.api.mutations
   (:require
-   [clojure.core.async :refer [go <! take! >! put! chan]]
+   [clojure.core.async :refer [go <! take! >! put! chan] :as async]
    [fulcro.client.primitives :as prim]
    [fulcro.client.mutations :as mutation :refer [defmutation]]
    [fulcro.client.logging :as log]
@@ -23,13 +23,10 @@
 (def upsert-person (partial upsert person-table))
 
 (defn upsert-me
-  [state person]
-  (if-let [[_ id] (:authentication/me state)]
-    (upsert-person state person id)
-    (let [id (random-uuid)]
-      (-> state
-        (upsert-person person id)
-        (assoc :authentication/me [person-table id])))))
+  [state me id]
+  (-> state
+    (upsert-person me id)
+    (assoc :authentication/me [person-table id])))
 
 ;; friends
 (def friend-table  :friend/by-id)
@@ -52,12 +49,13 @@
 
 (defn upload-friends
   [state friends]
-  (reduce #(-> %1 (upsert-person {} %2) (upsert-friend [person-table %2] %2)) state friends))
+  (reduce (fn [acc [friend-id friend-data]]
+            (-> acc (upsert-person friend-data friend-id) (upsert-friend [person-table friend-id] friend-id))) state friends))
 
 (defn upload-friend-or-friends
   [state friend-or-friends]
   (condp #(%1 %2) friend-or-friends
-    vector? (upload-friends state friend-or-friends)
+    coll? (upload-friends state friend-or-friends)
     nil? state
     (upload-friends state [friend-or-friends])))
 
@@ -65,18 +63,32 @@
   "Sets the solid session."
   [session]
   (action [{:keys [state] :as env}]
-    (let [web-id (get session "webId")
-          c      (chan)]
+    (let [web-id  (get session "webId")
+          channel (chan)]
       (-> (rdf/load web-id)
-        (.then #(put! c {:solid/fullname (rdf/find-any web-id (rdf-namespaces/foaf "name"))
-                         :solid/friends  (rdf/find-any web-id (rdf-namespaces/foaf "knows"))})))
+        (.then #(let [fullname          (rdf/get-literal (rdf/find-any web-id (rdf-namespaces/foaf "name")))
+                      friends           (rdf/get-literal (rdf/find-any web-id (rdf-namespaces/foaf "knows")))
+                      friends-coll      (if (coll? friends) friends [friends])
+                      processed-friends (atom 0)]
+                  (put! channel {:person/name fullname})
+                  (run!
+                    (fn [friend]
+                      (.then
+                        (rdf/load friend)
+                        (fn [_]
+                          (put! channel [friend {:person/name (rdf/get-literal (rdf/find-any friend (rdf-namespaces/foaf "name")))}])
+                          (swap! processed-friends inc)
+                          (when (= @processed-friends (count friends-coll))
+                            (async/close! channel)))))
+                    friends-coll))))
       (go
-        (let [{:keys [solid/fullname solid/friends]} (<! c)]
+        (let [my-data (<! channel)
+              friends (<! (async/into [] channel))]
           (swap! state
             #(-> %
                (upsert-solid-session session)
-               (upsert-me {:person/name (and fullname (.-value fullname))})
-               (upload-friend-or-friends (and friends (.-value friends)))
+               (upsert-me my-data web-id)
+               (upload-friend-or-friends friends)
                )))))))
 
 (defn delete-solid-session
