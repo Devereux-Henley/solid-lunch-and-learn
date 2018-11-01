@@ -1,22 +1,12 @@
 (ns solid.auth
   (:require
    [devcards.core :as rc :refer-macros [defcard]]
+   ["solid-auth-client" :as solid-client]
+   [solid.api.mutations :as api]
    [solid.ui.components :as components]
    [fulcro.client.cards :refer [defcard-fulcro]]
    [fulcro.client.primitives :as prim :refer [defsc]]
    [fulcro.client.dom :as dom]))
-
-(defcard LoginButton
-  "Creates a SOLID session for a user by presenting them with a login popup.
-
-   Visible when there is no current SOLID session."
-  (components/ui-login-button {}))
-
-(defcard LogoutButton
-  "Removes a users SOLID session.
-
-   Visible when there is a current SOLID session."
-  (components/ui-logout-button {:authentication/solid-session {}}))
 
 (defsc AuthenticationRoot [this {:keys [login-button logout-button]}]
   {:query [{:login-button (prim/get-query components/LoginButton)}
@@ -30,4 +20,10 @@
   AuthenticationRoot
   {}
   {:inspect-data true
-   :classname "break-all"})
+   :classname    "break-all"
+   :fulcro {:started-callback (fn [{:keys [reconciler] :as app}]
+                                (.trackSession
+                                  solid-client
+                                  #(if %
+                                     (prim/transact! reconciler `[(api/set-solid-session! ~(js->clj %))])
+                                     (prim/transact! reconciler `[(api/delete-solid-session! {})]))))}})

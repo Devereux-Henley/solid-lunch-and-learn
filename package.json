@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {},
   "devDependencies": {
+    "@material-ui/core": "^3.3.2",
     "@trust/webcrypto": "github:anvilresearch/webcrypto#glinklater-browser",
     "cryptiles": "^4.1.2",
     "hoek": "^4.2.1",

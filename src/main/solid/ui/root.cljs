@@ -1,6 +1,7 @@
 (ns solid.ui.root
   (:require
    [solid.ui.components :as components]
+   [solid.ui.material :as material]
    [fulcro.client.mutations :as m]
    [fulcro.client.data-fetch :as df]
    [fulcro.client.dom :as dom]
@@ -9,10 +10,10 @@
 
 ;; The main UI of your application
 
-(defsc Root [this {:keys [login-button logout-button]}]
-  {:query [{:login-button (prim/get-query components/LoginButton)}
-           {:logout-button (prim/get-query components/LogoutButton)}]}
-  (do
-    (dom/div nil
-      (components/ui-login-button login-button)
-      (components/ui-logout-button logout-button))))
+(defsc Root [this {:keys [root/application]}]
+  {:query (fn [] [{:root/application (prim/get-query components/Application)}])
+   :initial-state (fn [props] {:ui/locale "en-US"
+                               :root/application (prim/get-initial-state components/Application {})})}
+  (dom/div nil
+    (components/ui-application application)
+    ))

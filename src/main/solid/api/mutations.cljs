@@ -28,11 +28,6 @@
     (upsert-person me id)
     (assoc :authentication/me [person-table id])))
 
-;; friends
-(def friend-table  :friend/by-id)
-(def upsert-friend (partial upsert friend-table))
-(def delete-friend (partial delete friend-table))
-
 ;; sessions
 (def session-table :session/by-id)
 (def upsert-session (partial upsert session-table))
@@ -46,18 +41,6 @@
       (-> state
         (upsert-session session id)
         (assoc :authentication/solid-session [session-table id])))))
-
-(defn upload-friends
-  [state friends]
-  (reduce (fn [acc [friend-id friend-data]]
-            (-> acc (upsert-person friend-data friend-id) (upsert-friend [person-table friend-id] friend-id))) state friends))
-
-(defn upload-friend-or-friends
-  [state friend-or-friends]
-  (condp #(%1 %2) friend-or-friends
-    coll? (upload-friends state friend-or-friends)
-    nil? state
-    (upload-friends state [friend-or-friends])))
 
 (defmutation set-solid-session!
   "Sets the solid session."
@@ -87,8 +70,8 @@
           (swap! state
             #(-> %
                (upsert-solid-session session)
-               (upsert-me my-data web-id)
-               (upload-friend-or-friends friends)
+               (as-> % (reduce (fn [acc [id data]] (upsert-person acc data id)) % friends))
+               (upsert-me (assoc my-data :person/friends friends) web-id)
                )))))))
 
 (defn delete-solid-session
