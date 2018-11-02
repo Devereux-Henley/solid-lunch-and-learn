@@ -8,21 +8,21 @@
    [solid.ui.material :as material]
    ))
 
-(defsc PersonEntry [this {:keys [person/name]}]
+(defsc FriendEntry [this {:keys [person/name]}]
   {:query (fn [] (prim/get-query domain/Person))
-   :ident (fn [] (prim/get-ident domain/Person))
+   :ident [:friend-entry/by-id :db/id]
    :initial-state (fn [props] (prim/get-initial-state domain/Person {}))}
   (dom/div nil name))
 
-(def ui-person-entry (prim/factory PersonEntry {:keyfn :db/id}))
+(def ui-friend-entry (prim/factory FriendEntry {:keyfn :person/id}))
 
-(defsc PersonList [this {:keys [list/items :db/id]}]
-  {:query (fn [] [:db/id {:list/items (prim/get-query PersonEntry)}])
+(defsc MyFriendList [this {:keys [authentication/me db/id]}]
+  {:query (fn [] [:db/id {[:authentication/me '_] [:person/friends]}])
    :ident [:list/by-id :db/id]
    :initial-state (fn [props] {:db/id (prim/tempid) :list/items []})}
-  (dom/div nil (map ui-person-entry items)))
+  (dom/div nil (map #(ui-friend-entry (second %)) (:person/friends me))))
 
-(def ui-person-list (prim/factory PersonList))
+(def ui-my-friend-list (prim/factory MyFriendList))
 
 (defn authenticate [session]
   (if session
@@ -73,13 +73,13 @@
 
 (defsc Application [this {:keys [application-bar people]}]
   {:query (fn [] [{:application-bar (prim/get-query ApplicationBar)}
-                  {:people (prim/get-query PersonList)}])
+                  {:people (prim/get-query MyFriendList)}])
    :ident (fn [] [:application :root])
    :initial-state (fn [props] {:application-bar (prim/get-initial-state ApplicationBar {})
-                               :people (prim/get-initial-state PersonList {})})}
+                               :people (prim/get-initial-state MyFriendList {})})}
   (dom/div nil
     (ui-application-bar application-bar)
-    (ui-person-list people)
+    (ui-my-friend-list people)
     ))
 
 (def ui-application (prim/factory Application))
