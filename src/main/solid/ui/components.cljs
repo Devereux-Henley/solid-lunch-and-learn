@@ -1,11 +1,28 @@
 (ns solid.ui.components
   (:require
+   [solid.api.domain :as domain]
    [solid.api.mutations :as api]
    [fulcro.client.primitives :as prim :refer [defsc]]
    ["solid-auth-client" :as solid-client]
    [fulcro.client.dom :as dom]
    [solid.ui.material :as material]
    ))
+
+(defsc PersonEntry [this {:keys [person/name]}]
+  {:query (fn [] (prim/get-query domain/Person))
+   :ident (fn [] (prim/get-ident domain/Person))
+   :initial-state (fn [props] (prim/get-initial-state domain/Person {}))}
+  (dom/div nil name))
+
+(def ui-person-entry (prim/factory PersonEntry {:keyfn :db/id}))
+
+(defsc PersonList [this {:keys [list/items :db/id]}]
+  {:query (fn [] [:db/id {:list/items (prim/get-query PersonEntry)}])
+   :ident [:list/by-id :db/id]
+   :initial-state (fn [props] {:db/id (prim/tempid) :list/items []})}
+  (dom/div nil (map ui-person-entry items)))
+
+(def ui-person-list (prim/factory PersonList))
 
 (defn authenticate [session]
   (if session
@@ -54,11 +71,15 @@
 
 (def ui-application-bar (prim/factory ApplicationBar))
 
-(defsc Application [this {:keys [application-bar]}]
-  {:query (fn [] [{:application-bar (prim/get-query ApplicationBar)}])
+(defsc Application [this {:keys [application-bar people]}]
+  {:query (fn [] [{:application-bar (prim/get-query ApplicationBar)}
+                  {:people (prim/get-query PersonList)}])
    :ident (fn [] [:application :root])
-   :initial-state (fn [props] {:application-bar (prim/get-initial-state ApplicationBar {})})}
+   :initial-state (fn [props] {:application-bar (prim/get-initial-state ApplicationBar {})
+                               :people (prim/get-initial-state PersonList {})})}
   (dom/div nil
-    (ui-application-bar application-bar)))
+    (ui-application-bar application-bar)
+    (ui-person-list people)
+    ))
 
 (def ui-application (prim/factory Application))

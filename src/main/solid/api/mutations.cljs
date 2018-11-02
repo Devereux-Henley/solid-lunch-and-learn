@@ -1,11 +1,9 @@
 (ns solid.api.mutations
   (:require
-   [clojure.core.async :refer [go <! take! >! put! chan] :as async]
    [fulcro.client.primitives :as prim]
    [fulcro.client.mutations :as mutation :refer [defmutation]]
    [fulcro.client.logging :as log]
-   [solid.api.rdf :as rdf]
-   [solid.api.namespaces :as rdf-namespaces]))
+   ))
 
 ;; Place your client mutations here
 
@@ -28,6 +26,10 @@
     (upsert-person me id)
     (assoc :authentication/me [person-table id])))
 
+(defn upsert-people
+  [state people]
+  (reduce (fn [acc [id data]] (upsert-person acc (assoc data :person/id id) id)) state people))
+
 ;; sessions
 (def session-table :session/by-id)
 (def upsert-session (partial upsert session-table))
@@ -42,43 +44,33 @@
         (upsert-session session id)
         (assoc :authentication/solid-session [session-table id])))))
 
-(defmutation set-solid-session!
-  "Sets the solid session."
-  [session]
-  (action [{:keys [state] :as env}]
-    (let [web-id  (get session "webId")
-          channel (chan)]
-      (-> (rdf/load web-id)
-        (.then #(let [fullname          (rdf/get-literal (rdf/find-any web-id (rdf-namespaces/foaf "name")))
-                      friends           (rdf/get-literal (rdf/find-any web-id (rdf-namespaces/foaf "knows")))
-                      friends-coll      (if (coll? friends) friends [friends])
-                      processed-friends (atom 0)]
-                  (put! channel {:person/name fullname})
-                  (run!
-                    (fn [friend]
-                      (.then
-                        (rdf/load friend)
-                        (fn [_]
-                          (put! channel [friend {:person/name (rdf/get-literal (rdf/find-any friend (rdf-namespaces/foaf "name")))}])
-                          (swap! processed-friends inc)
-                          (when (= @processed-friends (count friends-coll))
-                            (async/close! channel)))))
-                    friends-coll))))
-      (go
-        (let [my-data (<! channel)
-              friends (<! (async/into [] channel))]
-          (swap! state
-            #(-> %
-               (upsert-solid-session session)
-               (as-> % (reduce (fn [acc [id data]] (upsert-person acc data id)) % friends))
-               (upsert-me (assoc my-data :person/friends friends) web-id)
-               )))))))
-
 (defn delete-solid-session
   [state]
   (if-let [[_ id] (:authentication/solid-session state)]
     (-> state (dissoc :authentication/solid-session) (delete-session id))
     state))
+
+;; mutations
+
+(defmutation upsert-me!
+  "Upserts information for the current user."
+  [{:keys [authentication/me]}]
+  (action [{:keys [state] :as env}]
+    (swap! state #(upsert-me % me (:person/id me)))))
+
+(defmutation upsert-people!
+  "Upserts multiple people."
+  [{:keys [person/by-id]}]
+  (action [{:keys [state] :as env}]
+    (swap! state #(upsert-people % by-id))))
+
+(defmutation set-solid-session!
+  "Sets the solid session."
+  [{:keys [solid/session]}]
+  (action [{:keys [state] :as env}]
+    (swap! state
+      #(-> %
+         (upsert-solid-session session)))))
 
 (defmutation delete-solid-session!
   "Deletes the solid session."
