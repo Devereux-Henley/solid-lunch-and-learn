@@ -99,16 +99,17 @@
 
 (def ui-application-bar (prim/factory ApplicationBar))
 
-(defsc Application [this {:keys [application-bar people]}]
+(defsc Application [this {:keys [application-bar people authentication/me]}]
   {:query (fn [] [{:application-bar (prim/get-query ApplicationBar)}
-                  {:people (prim/get-query MyFriendList)}])
+                  {:people (prim/get-query MyFriendList)}
+                  [:authentication/me '_]])
    :ident (fn [] [:application :root])
    :initial-state (fn [props] {:application-bar (prim/get-initial-state ApplicationBar {})
                                :people (prim/get-initial-state MyFriendList {})})}
   (dom/div nil
     (css-injection/style-element {:component this})
     (ui-application-bar application-bar)
-    (ui-my-friend-list people)
+    (when me (ui-my-friend-list people))
     ))
 
 (def ui-application (prim/factory Application))

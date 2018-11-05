@@ -19,6 +19,7 @@
 ;; persons
 (def person-table  :person/by-id)
 (def upsert-person (partial upsert person-table))
+(def delete-person (partial delete person-table))
 
 (defn upsert-me
   [state me id]
@@ -26,9 +27,19 @@
     (upsert-person me id)
     (assoc :authentication/me [person-table id])))
 
+(defn delete-me
+  [state id]
+  (-> state
+    (delete-person state id)
+    (dissoc :authentication/me)))
+
 (defn upsert-people
   [state people]
   (reduce (fn [acc [id data]] (upsert-person acc (assoc data :person/id id) id)) state people))
+
+(defn delete-people
+  [state]
+  (assoc state :person/by-id {}))
 
 ;; sessions
 (def session-table :session/by-id)
@@ -77,4 +88,7 @@
   [_]
   (action [{:keys [state] :as env}]
     (swap! state
-      #(delete-solid-session %))))
+      #(-> %
+         delete-solid-session
+         (as-> % (delete-me % (second (:authentication/me %))))
+         delete-people))))
