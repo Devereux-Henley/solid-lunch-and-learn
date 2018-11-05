@@ -21,7 +21,8 @@
         (material/ui-avatar #js {:src image :alt (str "Profile image of: " name) :className profile-image})
         (material/ui-list-item-icon nil
           (material/ui-icon-account-circle (clj->js {:classes {:root icon}})))))
-    (material/ui-list-item-text #js {:primary name})))
+    (material/ui-list-item-text nil
+      (material/ui-typography {:component "a" :href id} name))))
 
 (def ui-friend-entry (prim/factory FriendEntry {:keyfn :person/id}))
 
@@ -70,7 +71,7 @@
 (defsc ProfileBadge [this {:keys [authentication/me]}]
   {:query [:db/id {[:authentication/me '_] [:person/image :person/name]}]
    :initial-state (fn [props] {:db/id (prim/tempid)})
-   :ident [:person/by-id :db/id]}
+   :ident [:profile-badge/by-id :db/id]}
   (dom/div nil
     (if me
       (material/ui-avatar #js {:src (:person/image me) :alt (str "Profile image of: " (:person/name me))})
