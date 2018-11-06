@@ -14,9 +14,9 @@
 
 (defn- query-user-data
   [web-id]
-  {:person/id web-id
-   :person/name (get-foaf-literal web-id "name")
-   :person/image (get-foaf-literal web-id "img")
+  {:person/id      web-id
+   :person/name    (get-foaf-literal web-id "name")
+   :person/image   (get-foaf-literal web-id "img")
    :person/friends []})
 
 (defn load-from-session
@@ -24,7 +24,7 @@
   (let [web-id  (get session "webId")
         channel (chan)]
     (-> (rdf/load web-id)
-      (.then #(let [my-data (query-user-data web-id)
+      (.then #(let [my-data           (query-user-data web-id)
                     friends           (map rdf/get-literal (rdf/find-each web-id (rdf-namespaces/foaf "knows")))
                     friends-coll      (if (coll? friends) friends [friends])
                     processed-friends (atom 0)]
@@ -40,8 +40,8 @@
                           (async/close! channel)))))
                   friends-coll))))
     (go
-      (let [my-data (<! channel)
-            friends (<! (async/into [] channel))
+      (let [my-data       (<! channel)
+            friends       (<! (async/into [] channel))
             friend-idents (mapv (fn [[friend-id _]] [:person/by-id friend-id]) friends)]
         (prim/transact! component-or-reconciler `[(api/set-solid-session! {:solid/session ~session})
                                                   (api/upsert-people!  {:person/by-id ~friends})
