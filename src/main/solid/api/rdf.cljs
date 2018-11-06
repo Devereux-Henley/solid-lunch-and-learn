@@ -10,15 +10,34 @@
 
 (defn rdf-symbol
   [sym]
-  (.sym rdflib sym))
+  (and sym (.sym rdflib sym)))
 
 (defn find-any
-  [sym relationship]
-  (.any store (rdf-symbol sym) relationship))
+  ([subject relationship]
+   (find-any subject relationship nil))
+  ([subject relationship object]
+   (.any store
+     (rdf-symbol subject)
+     relationship
+     (rdf-symbol object))))
 
 (defn find-each
-  [sym relationship]
-  (.each store (rdf-symbol sym) relationship))
+  ([subject relationship]
+   (find-each subject relationship nil))
+  ([subject relationship object]
+   (.each store
+     (rdf-symbol subject)
+     relationship
+     (rdf-symbol object))))
+
+(defn find-statements-matching
+  ([subject relationship]
+   (find-statements-matching subject relationship nil))
+  ([subject relationship object]
+   (.statementsMatching store
+     (rdf-symbol subject)
+     relationship
+     (rdf-symbol object))))
 
 (defn get-literal
   [literal]
