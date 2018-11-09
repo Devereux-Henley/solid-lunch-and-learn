@@ -1,7 +1,7 @@
 (ns solid.client
   (:require [fulcro.client :as fc]
-            [solid.ui.root :as root]
-            [solid.api.actions :as actions]
+            [solid.app.root :as root]
+            [solid.lib.authentication.actions :as actions-authentication]
             [fulcro.i18n :as i18n]
             ["intl-messageformat" :as IntlMessageFormat]))
 
@@ -21,7 +21,7 @@
 (defn ^:export init []
   (reset! app (fc/new-fulcro-client
                 :started-callback (fn [{:keys [reconciler] :as app}]
-                                    (actions/track-session reconciler))
+                                    (actions-authentication/track-session reconciler))
                 :reconciler-options {:shared      {::i18n/message-formatter message-format}
                                      :render-mode :keyframe ; Good for beginners. Remove to optimize UI refresh
                                      :shared-fn   ::i18n/current-locale}))

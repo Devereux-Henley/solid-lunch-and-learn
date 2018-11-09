@@ -1,6 +1,7 @@
-(ns solid.api.rdf
+(ns solid.lib.rdf.common
   (:require
-   ["rdflib" :as rdflib]))
+   ["rdflib" :as rdflib]
+   ))
 
 (def store (.graph rdflib))
 (def fetcher (rdflib/Fetcher. store))
@@ -42,3 +43,13 @@
 (defn get-literal
   [literal]
   (and literal (.-value literal)))
+
+(defn get-foaf-literal
+  [web-id rdf-key]
+  (->> (ns-foaf rdf-key)
+    (find-any web-id)
+    get-literal
+    ))
+
+;; Namespaces
+(def ns-foaf (.Namespace rdflib "http://xmlns.com/foaf/0.1/"))

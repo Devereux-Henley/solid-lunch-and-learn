@@ -1,12 +1,12 @@
-(ns solid.ui.root
+(ns solid.app.root
   (:require
-   [solid.ui.components :as components]
-   [solid.ui.material :as material]
+   [solid.app.components :as components]
    [fulcro.client.mutations :as m]
    [fulcro.client.data-fetch :as df]
    [fulcro.client.dom :as dom]
    [fulcro.client.primitives :as prim :refer [defsc]]
-   [fulcro.i18n :as i18n :refer [tr trf]]))
+   [fulcro.i18n :as i18n :refer [tr trf]]
+   ))
 
 ;; The main UI of your application
 

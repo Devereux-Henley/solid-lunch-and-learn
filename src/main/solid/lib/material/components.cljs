@@ -1,4 +1,4 @@
-(ns solid.ui.material
+(ns solid.lib.material.components
   (:require
    [fulcro.client.dom :as dom]
    ["@material-ui/core" :as material-ui]
