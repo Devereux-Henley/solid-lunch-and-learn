@@ -5,15 +5,16 @@
 
   :dependencies [[org.clojure/clojure     "1.9.0"]
                  [org.clojure/core.async  "0.4.474"]
-                 [thheller/shadow-cljs    "2.4.22"]
-                 [fulcrologic/fulcro      "2.6.8"]
+                 [thheller/shadow-cljs    "2.7.2"]
+                 [fulcrologic/fulcro      "2.6.14"]
                  [com.wsscode/pathom      "2.2.0-beta14"]
 
                  ; only required if you want to use this for tests
-                 [fulcrologic/fulcro-spec "2.1.0-1" :scope "test" :exclusions [fulcrologic/fulcro]]]
+                 [fulcrologic/fulcro-spec "2.1.2" :scope "test" :exclusions [fulcrologic/fulcro]]]
 
   :source-paths ["src/main"]
   :test-paths ["src/test"]
+  :plugins [[lein-ancient "0.6.15"]]
 
   :test-refresh {:report       fulcro-spec.reporters.terminal/fulcro-report
                  :with-repl    true
@@ -23,5 +24,5 @@
                           :dependencies [[binaryage/devtools "0.9.10"]
                                          [org.clojure/core.async "0.4.474"]
                                          [fulcrologic/fulcro-inspect "2.2.4" :exclusions [fulcrologic/fulcro-css]]
-                                         [devcards "0.2.4" :exclusions [cljsjs/react cljsjs/react-dom]]]
+                                         [devcards "0.2.6" :exclusions [cljsjs/react cljsjs/react-dom]]]
                           }})

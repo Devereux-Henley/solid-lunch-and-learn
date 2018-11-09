@@ -3,9 +3,14 @@
    ["rdflib" :as rdflib]
    ))
 
+;; Client
 (def store (.graph rdflib))
 (def fetcher (rdflib/Fetcher. store))
 
+;; Namespaces
+(def ns-foaf (.Namespace rdflib "http://xmlns.com/foaf/0.1/"))
+
+;; Operations
 (defn load [id]
   (.load fetcher id))
 
@@ -50,6 +55,3 @@
     (find-any web-id)
     get-literal
     ))
-
-;; Namespaces
-(def ns-foaf (.Namespace rdflib "http://xmlns.com/foaf/0.1/"))

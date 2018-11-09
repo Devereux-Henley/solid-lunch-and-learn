@@ -1,7 +1,7 @@
 (ns solid.cards
-  (:require [solid.auth]
+  (:require [solid.authentication]
             devcards.core))
 
 (devcards.core/start-devcard-ui!)
 
-(defn refresh [] )
+(defn refresh [])
