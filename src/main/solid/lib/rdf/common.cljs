@@ -9,6 +9,7 @@
 
 ;; Namespaces
 (def ns-foaf (.Namespace rdflib "http://xmlns.com/foaf/0.1/"))
+(def ns-vcard (.Namespace rdflib "https://www.w3.org/TR/vcard-rdf/"))
 
 ;; Operations
 (defn load [id]
