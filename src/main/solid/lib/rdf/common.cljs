@@ -7,8 +7,15 @@
 (def store (.graph rdflib))
 (def fetcher (rdflib/Fetcher. store))
 
-;; Namespaces
+;; Solid Specification
 (def ns-foaf (.Namespace rdflib "http://xmlns.com/foaf/0.1/"))
+(def ns-ldp (.Namespace rdflib "http://www.w3.org/ns/ldp#"))
+(def ns-owl (.Namespace rdflib "http://www.w3.org/2002/07/owl#"))
+(def ns-auth-acl (.Namespace rdflib "http://www.w3.org/ns/auth/acl#"))
+(def ns-auth-cert (.Namespace rdflib "http://www.w3.org/ns/auth/cert#"))
+(def ns-dc-terms (.Namespace rdflib "http://purl.org/dc/terms/"))
+
+;; Solid Recommendations
 (def ns-vcard (.Namespace rdflib "https://www.w3.org/TR/vcard-rdf/"))
 
 ;; Operations
