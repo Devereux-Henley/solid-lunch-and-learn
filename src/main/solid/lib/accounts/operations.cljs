@@ -10,7 +10,7 @@
 
 (defn upsert-people
   [state people]
-  (reduce (fn [acc [id data]] (upsert-person acc (assoc data :person/id id) id)) state people))
+  (reduce (fn [acc {:keys [person/id] :as data}] (upsert-person acc (assoc data :person/id id) id)) state people))
 
 (defn delete-people
   [state]

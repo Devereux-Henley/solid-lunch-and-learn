@@ -5,7 +5,7 @@
   [table state value id]
   (assoc-in state [table id] value))
 
-(defn update
+(defn update-row
   [table state value id]
   (update-in state [table id] merge value))
 
