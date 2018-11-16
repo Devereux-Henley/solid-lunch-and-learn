@@ -4,7 +4,7 @@
    ))
 
 ;; Client
-(def store (.graph rdflib))
+(def store (rdflib/IndexedFormula.))
 (def fetcher (rdflib/Fetcher. store))
 
 ;; Solid Specification
